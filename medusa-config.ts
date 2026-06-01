@@ -1,6 +1,10 @@
 import { loadEnv, defineConfig } from '@medusajs/framework/utils'
+import path from 'path'
 
-loadEnv(process.env.NODE_ENV || 'development', process.cwd())
+const env = process.env.NODE_ENV || 'development'
+
+loadEnv(env, process.cwd())
+loadEnv(env, path.resolve(process.cwd(), '../..'))
 
 module.exports = defineConfig({
   projectConfig: {
