@@ -7,6 +7,29 @@ loadEnv(env, process.cwd())
 loadEnv(env, path.resolve(process.cwd(), '../..'))
 
 module.exports = defineConfig({
+  admin: {
+    vite: (config) => {
+      return {
+        optimizeDeps: {
+          include: [
+            ...(config.optimizeDeps?.include ?? []),
+            "react",
+            "react-dom",
+            "gutenberg-block-kit",
+            "gutenberg-block-kit/editor",
+          ],
+          force: true,
+        },
+        resolve: {
+          dedupe: ["react", "react-dom", "@wordpress/element"],
+          alias: {
+            "gutenberg-block-kit/editor": 
+              path.resolve(__dirname, "node_modules/gutenberg-block-kit/dist/editor.cjs"),
+          },
+        },
+      }
+    },
+  },
   projectConfig: {
     databaseUrl: process.env.DATABASE_URL,
     http: {
@@ -20,11 +43,7 @@ module.exports = defineConfig({
   modules: [
     {
       resolve: "@medusajs/medusa/payment",
-      options: {
-        providers: [
-         
-        ],
-      },
+      options: { providers: [] },
     },
     {
       resolve: "./src/modules/cms",
