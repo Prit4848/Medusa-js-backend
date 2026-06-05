@@ -5,6 +5,8 @@ const Blog = model.define("blog", {
   title:       model.text(),
   slug:        model.text(),
   content:     model.text(),
+  content_html: model.text().nullable(),
+  content_json: model.json().nullable(),
   author:      model.text(),
   thumbnail:   model.text().nullable(),
   tags:        model.array().nullable(),

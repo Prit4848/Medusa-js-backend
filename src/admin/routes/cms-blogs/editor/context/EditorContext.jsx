@@ -31,7 +31,9 @@ export function EditorProvider({ children, blogId, initialData, onSave }) {
 
   // Load existing content when editing an existing blog
   useEffect(() => {
-    if (initialData?.content) {
+    if (initialData?.content_json) {
+      setBlocks(initialData.content_json);
+    } else if (initialData?.content) {
       try {
         // Try JSON first (our format), fall back to HTML parse
         const parsed = JSON.parse(initialData.content);
@@ -65,7 +67,12 @@ export function EditorProvider({ children, blogId, initialData, onSave }) {
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
     // Bubble up to the parent form so it can POST/PUT to Medusa
-    onSave?.({ content: json, contentHtml: html, ...extraFields });
+    onSave?.({ 
+      content: json, 
+      contentHtml: html, 
+      contentJson: blocks,
+      ...extraFields 
+    });
   }
 
   async function handleClear() {

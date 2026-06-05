@@ -20,6 +20,7 @@ export default function CmsBlogFormPage() {
     slug: "",
     content: "",
     content_html: "",
+    content_json: null as any,
     author: "",
     thumbnail: "",
     tags: "",
@@ -40,6 +41,7 @@ export default function CmsBlogFormPage() {
             slug: data.blog.slug || "",
             content: data.blog.content || "",
             content_html: data.blog.content_html || "",
+            content_json: data.blog.content_json || null,
             author: data.blog.author || "",
             thumbnail: data.blog.thumbnail || "",
             tags: (data.blog.tags || []).join(", "),
@@ -78,6 +80,7 @@ export default function CmsBlogFormPage() {
       ...prev,
       content: data.content,
       content_html: data.contentHtml,
+      content_json: data.contentJson,
     }))
   }
 
@@ -216,6 +219,7 @@ export default function CmsBlogFormPage() {
               blogId={id}
               initialData={{
                 content: form.content,
+                content_json: form.content_json,
               }}
               onSave={handleEditorSave}
             />
