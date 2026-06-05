@@ -117,7 +117,23 @@ export function EditorProvider({ children, blogId, initialData, onSave }) {
     setBlocks(result);
     setTemplatePickerOpen(false);
   }
-
+function onViewSite() {
+  const html = serialize(blocks)
+  const blob = new Blob([`
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>${pageTitle}</title>
+        <style>
+          body { font-family: sans-serif; max-width: 800px; margin: 40px auto; padding: 0 20px; }
+        </style>
+      </head>
+      <body>${html}</body>
+    </html>
+  `], { type: 'text/html' })
+  
+  window.open(URL.createObjectURL(blob), '_blank')
+}
   const value = {
     blocks, setBlocks,
     output,
@@ -136,7 +152,7 @@ export function EditorProvider({ children, blogId, initialData, onSave }) {
     topToolbar, setTopToolbar,
     historyRef, blocksRef,
     blockTemplates,
-    onViewSite: null,       // not needed in Medusa context
+    onViewSite: onViewSite,       // not needed in Medusa context
     handleSave,
     handleClear,
     handleUndo,
