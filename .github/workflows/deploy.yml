@@ -16,6 +16,8 @@ jobs:
           host: ${{ secrets.DD_HOST }}
           username: ${{ secrets.DD_USER }}
           key: ${{ secrets.DD_SSH_KEY }}
+          command_timeout: 30m
+          
           script: |
             export NVM_DIR="$HOME/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
