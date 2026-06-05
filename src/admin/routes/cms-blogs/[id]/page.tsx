@@ -11,7 +11,8 @@ import {
 // OLD: import BlockEditor from "../editor/BlockEditor"
 // NEW:
 import { BlockEditor } from "gutenberg-block-kit/editor"
-import "gutenberg-block-kit/styles"
+// import "gutenberg-block-kit/styles" // Removed global import
+import gutenbergStyles from "gutenberg-block-kit/styles?inline"
 
 // Fix for broken library icon paths (library bug uses /src/images/...)
 import blockIcon from "../editor/images/block.png"
@@ -27,6 +28,20 @@ const ICON_STYLES = `
 `
 
 export default function CmsBlogFormPage() {
+  useEffect(() => {
+    const styleId = "gutenberg-styles-injection"
+    if (!document.getElementById(styleId)) {
+      const style = document.createElement("style")
+      style.id = styleId
+      style.innerHTML = gutenbergStyles
+      document.head.appendChild(style)
+    }
+    return () => {
+      const style = document.getElementById(styleId)
+      if (style) style.remove()
+    }
+  }, [])
+
   const { id } = useParams()
   const navigate = useNavigate()
   const isNew = id === "new"
@@ -223,7 +238,7 @@ export default function CmsBlogFormPage() {
         {/* CONTENT — replaced with gutenberg-block-kit */}
         <div>
           <Label>Content</Label>
-          <div className="mt-2 border rounded-lg overflow-hidden" style={{ minHeight: "800px" }}>
+          <div className="mt-2 border rounded-lg overflow-hidden gutenberg-editor-wrapper" style={{ minHeight: "800px" }}>
             <BlockEditor
               initialPageId={id}
               initialTitle={form.title}
