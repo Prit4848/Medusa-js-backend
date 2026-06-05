@@ -17,6 +17,10 @@ jobs:
           username: ${{ secrets.DD_USER }}
           key: ${{ secrets.DD_SSH_KEY }}
           script: |
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+            node -v
+            npm -v
             cd /var/www/html/medusajs
 
             git pull origin main
