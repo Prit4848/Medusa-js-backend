@@ -10,6 +10,12 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
 
 export async function POST(req: MedusaRequest, res: MedusaResponse) {
   const cmsService: CmsModuleService = req.scope.resolve(CMS_MODULE)
-  const blog = await cmsService.createBlogs(req.body as any)
+  const data = req.body as any
+  
+  if (data.status === "published" && !data.published_at) {
+    data.published_at = new Date()
+  }
+
+  const blog = await cmsService.createBlogs(data)
   res.json({ blog })
 }

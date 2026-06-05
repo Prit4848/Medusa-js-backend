@@ -1680,7 +1680,7 @@ span.myapp-underline {
 
 .builder-wrapper .dashicons,
 .dashicons {
-  background-image: url(/src/images/block.png);
+  background-image: url(./images/block.png);
   background-repeat: no-repeat;
   background-size: contain;
   display: block;
@@ -1689,7 +1689,7 @@ span.myapp-underline {
 }
 
 .components-popover__fallback-container .components-button.block-editor-block-types-list__item:not(:disabled):hover .dashicons {
-  background-image: url(/src/images/block-hover.png);
+  background-image: url(./images/block-hover.png);
   background-repeat: no-repeat;
   background-size: contain;
 }
