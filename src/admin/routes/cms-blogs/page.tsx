@@ -64,7 +64,7 @@ export default function CmsBlogsListPage() {
                 </Table.Cell>
                 <Table.Cell>
                   {blog.published_at
-                    ? new Date(blog.published_at).toLocaleDateString()
+                    ? new Date(blog.created_at).toLocaleDateString()
                     : "—"}
                 </Table.Cell>
                 <Table.Cell>
