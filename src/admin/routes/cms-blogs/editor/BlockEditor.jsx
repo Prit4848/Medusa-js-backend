@@ -27,6 +27,26 @@ const scopeCSS = (css, selector) => {
         ) {
           return s
         }
+
+        // List of classes that should NOT be scoped because they are rendered in portals (like Modals)
+        const globalClasses = [
+          ".components-modal",
+          ".components-popover",
+          ".components-tooltip",
+          ".components-autocomplete",
+          ".components-dropdown",
+          ".components-menu-group",
+          ".components-menu-item",
+          ".components-notice",
+          ".components-snackbar",
+          ".rbb-media-modal",
+          ".components-drop-zone"
+        ]
+
+        if (globalClasses.some(cls => trimmed.includes(cls))) {
+          return s
+        }
+
         if (trimmed.startsWith(selector)) {
           return s
         }

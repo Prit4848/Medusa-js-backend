@@ -7,6 +7,7 @@ import {
   Input,
   Label,
 } from "@medusajs/ui"
+import { XMark } from "@medusajs/icons"
 
 // OLD: import BlockEditor from "../editor/BlockEditor"
 // NEW:
@@ -44,6 +45,26 @@ const scopeCSS = (css: string, selector: string) => {
         ) {
           return s
         }
+
+        // List of classes that should NOT be scoped because they are rendered in portals (like Modals)
+        const globalClasses = [
+          ".components-modal",
+          ".components-popover",
+          ".components-tooltip",
+          ".components-autocomplete",
+          ".components-dropdown",
+          ".components-menu-group",
+          ".components-menu-item",
+          ".components-notice",
+          ".components-snackbar",
+          ".rbb-media-modal",
+          ".components-drop-zone"
+        ]
+
+        if (globalClasses.some(cls => trimmed.includes(cls))) {
+          return s
+        }
+
         // Don't double-prefix if already prefixed
         if (trimmed.startsWith(selector)) {
           return s
@@ -150,13 +171,17 @@ export default function CmsBlogFormPage() {
   }
 
   return (
-    <Container>
+    <Container className="p-0 max-w-none">
       <style>{ICON_STYLES}</style>
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-6 px-8 pt-6">
         <Heading level="h1">{isNew ? "New Blog" : "Edit Blog"}</Heading>
         <div className="flex gap-2">
-          <Button variant="secondary" onClick={() => navigate("/cms-blogs")}>
-            Cancel
+          <Button 
+            variant="secondary" 
+            onClick={() => navigate("/cms-blogs")}
+            className="flex items-center justify-center p-2"
+          >
+            <XMark />
           </Button>
         </div>
       </div>
@@ -164,13 +189,36 @@ export default function CmsBlogFormPage() {
       <div className="flex flex-col gap-4">
         {/* CONTENT — replaced with gutenberg-block-kit */}
         <div>
-          <div className="border rounded-lg overflow-hidden gutenberg-editor-wrapper" style={{ minHeight: "800px" }}>
+          <div className="border-t gutenberg-editor-wrapper" style={{ minHeight: "calc(100vh - 150px)" }}>
             <BlockEditor
               initialPageId={id}
               initialTitle={form.title}
               initialContent={form.content || form.content_html || ""}
 
-              // package calls this when user hits Save inside editor
+              // Media library integration
+              media={{
+                perPage: 20,
+                listImages: async ({ page, perPage, search }) => {
+                  const res = await fetch(
+                    `/admin/cms/media?page=${page}&perPage=${perPage}&q=${encodeURIComponent(search || "")}`,
+                    { credentials: "include" }
+                  );
+                  return res.json();
+                },
+                uploadImage: async (file) => {
+                  const body = new FormData();
+                  // The middleware expects "files" field
+                  body.append('files', file);
+                  const res = await fetch('/admin/cms/media', { 
+                    method: 'POST', 
+                    body,
+                    credentials: "include" 
+                  });
+                  return res.json();
+                },
+              }}
+
+              // package calls this when user clicks Save inside the editor
               onSave={handleEditorSave}
 
               // package calls this on mount to load existing content
