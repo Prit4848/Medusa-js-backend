@@ -168,6 +168,7 @@ function EditorApp() {
                       </div>
                     </div>
                   </div>
+                  
                   {/* ---- SIDEBAR ---- */}
                   {sidebarOpen && (
                     <div className='editor-sidebar'>
