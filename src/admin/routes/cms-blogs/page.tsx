@@ -46,8 +46,6 @@ export default function CmsBlogsListPage() {
           <Table.Header>
             <Table.Row>
               <Table.HeaderCell>Title</Table.HeaderCell>
-              <Table.HeaderCell>Author</Table.HeaderCell>
-              <Table.HeaderCell>Status</Table.HeaderCell>
               <Table.HeaderCell>Published At</Table.HeaderCell>
               <Table.HeaderCell>Actions</Table.HeaderCell>
             </Table.Row>
@@ -56,15 +54,9 @@ export default function CmsBlogsListPage() {
             {blogs.map((blog: any) => (
               <Table.Row key={blog.id}>
                 <Table.Cell>{blog.title}</Table.Cell>
-                <Table.Cell>{blog.author}</Table.Cell>
-                <Table.Cell>
-                  <Badge color={blog.status === "published" ? "green" : "grey"}>
-                    {blog.status}
-                  </Badge>
-                </Table.Cell>
                 <Table.Cell>
                   {blog.published_at
-                    ? new Date(blog.created_at).toLocaleDateString()
+                    ? new Date(blog.published_at).toLocaleDateString()
                     : "—"}
                 </Table.Cell>
                 <Table.Cell>

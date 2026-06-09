@@ -12,8 +12,8 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
 // PUT update page
 export async function PUT(req: MedusaRequest, res: MedusaResponse) {
   const cmsService: CmsModuleService = req.scope.resolve(CMS_MODULE)
-  const page = await cmsService.updatePages({ id: req.params.id, ...req.body as any })
-  res.json({ page })
+  const pages = await cmsService.updatePages([{ id: req.params.id, ...req.body as any }])
+  res.json({ page: pages[0] })
 }
 
 // DELETE page

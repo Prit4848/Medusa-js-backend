@@ -21,25 +21,8 @@ class CmsModuleService extends MedusaService({
     return page || null
   }
 
-  async getPublishedBlogs() {
-    return await this.listBlogs({ status: "published" })
-  }
-
-  async getBlogBySlug(slug: string) {
-    const [blog] = await this.listBlogs({ slug })
-    return blog || null
-  }
-
   async publishPage(id: string) {
     return await this.updatePages({ id, status: "published" })
-  }
-
-  async publishBlog(id: string) {
-    return await this.updateBlogs({
-      id,
-      status: "published",
-      published_at: new Date(),
-    })
   }
 }
 

@@ -1678,8 +1678,7 @@ span.myapp-underline {
   margin-left: auto;
 }
 
-.builder-wrapper .dashicons,
-.dashicons {
+.builder-wrapper .dashicons {
   background-image: url(./images/block.png);
   background-repeat: no-repeat;
   background-size: contain;
