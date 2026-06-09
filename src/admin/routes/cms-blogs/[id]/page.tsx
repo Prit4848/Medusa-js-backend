@@ -26,6 +26,9 @@ const ICON_STYLES = `
   .components-popover__fallback-container .components-button.block-editor-block-types-list__item:not(:disabled):hover .dashicons {
     background-image: url(${blockHoverIcon}) !important;
   }
+  .builder-wrapper .editor-header {
+    background: #fff !important;
+  }
 `
 
 // Helper to scope CSS strings to a selector
@@ -146,7 +149,7 @@ export default function CmsBlogFormPage() {
         credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          title:        title || form.title || "Untitled Blog",
+          title:        title || form.title || "Untitled",
           content:      json,
           content_html: html,
           content_json: parsedJson,
@@ -160,11 +163,11 @@ export default function CmsBlogFormPage() {
         navigate(`/cms-blogs`)
       } else {
         console.error("Save failed:", saved)
-        alert(`Failed to save blog (Error ${res.status}). Please check if you are still logged in.`)
+        alert(`Failed to save (Error ${res.status}). Please check if you are still logged in.`)
       }
     } catch (err) {
       console.error(err)
-      alert("Failed to save blog. Network error or session expired.")
+      alert("Failed to save. Network error or session expired.")
     } finally {
       setSaving(false)
     }
@@ -173,8 +176,8 @@ export default function CmsBlogFormPage() {
   return (
     <Container className="p-0 max-w-none">
       <style>{ICON_STYLES}</style>
-      <div className="flex items-center justify-between mb-6 px-8 pt-6">
-        <Heading level="h1">{isNew ? "New Blog" : "Edit Blog"}</Heading>
+      <div className="flex items-center justify-between px-8 py-6  border-b ">
+        <Heading level="h1">{isNew ? "New Page" : "Edit Page"}</Heading>
         <div className="flex gap-2">
           <Button 
             variant="secondary" 

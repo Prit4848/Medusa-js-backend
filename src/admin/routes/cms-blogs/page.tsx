@@ -5,7 +5,7 @@ import { Button, Table, Badge, Container, Heading } from "@medusajs/ui"
 import { useNavigate } from "react-router-dom"
 
 export const config = defineRouteConfig({
-  label: "CMS Blogs",
+  label: "Block Builder",
   icon: PencilSquare,
 })
 
@@ -24,7 +24,7 @@ export default function CmsBlogsListPage() {
   }, [])
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Delete this blog?")) return
+    if (!confirm("Delete this?")) return
     await fetch(`/admin/cms/blogs/${id}`, {
       method: "DELETE",
       credentials: "include",
@@ -35,8 +35,8 @@ export default function CmsBlogsListPage() {
   return (
     <Container>
       <div className="flex items-center justify-between mb-6">
-        <Heading level="h1">CMS Blogs</Heading>
-        <Button onClick={() => navigate("/cms-blogs/new")}>+ New Blog</Button>
+        <Heading level="h1">Block Builder</Heading>
+        <Button onClick={() => navigate("/cms-blogs/new")}>+ New Page</Button>
       </div>
 
       {loading ? (
