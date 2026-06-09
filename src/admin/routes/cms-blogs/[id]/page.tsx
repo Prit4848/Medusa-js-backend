@@ -100,6 +100,7 @@ export default function CmsBlogFormPage() {
 
   const [form, setForm] = useState({
     title: "",
+    slug: "",
     content: "",
     content_html: "",
     content_json: null as any,
@@ -116,6 +117,7 @@ export default function CmsBlogFormPage() {
         .then((data) => {
           setForm({
             title:        data.blog.title        || "",
+            slug:         data.blog.slug         || "",
             content:      data.blog.content      || "",
             content_html: data.blog.content_html || "",
             content_json: data.blog.content_json || null,
@@ -160,7 +162,12 @@ export default function CmsBlogFormPage() {
       const saved = await res.json()
 
       if (res.ok) {
-        navigate(`/cms-blogs`)
+        if (isNew && saved.blog?.id) {
+          navigate(`/cms-blogs/${saved.blog.id}`, { replace: true })
+        } else if (saved.blog?.slug) {
+          setForm(prev => ({ ...prev, slug: saved.blog.slug }))
+        }
+        // Removed: navigate(`/cms-blogs`) - we want to stay on the page in a builder
       } else {
         console.error("Save failed:", saved)
         alert(`Failed to save (Error ${res.status}). Please check if you are still logged in.`)
@@ -223,6 +230,62 @@ export default function CmsBlogFormPage() {
 
               // package calls this when user clicks Save inside the editor
               onSave={handleEditorSave}
+
+              onViewSite={() => {
+                const html = form.content_html
+                if (!html) {
+                  alert("Please save your changes first to generate a preview.")
+                  return
+                }
+
+                const blob = new Blob([`
+                  <!DOCTYPE html>
+                  <html>
+                    <head>
+                      <title>${form.title || "Blog Preview"}</title>
+                      <style>
+                        /* Package Styles */
+                        ${gutenbergStyles}
+                        
+                        /* Preview Layout Styles */
+                        body { 
+                          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+                          max-width: 1200px; 
+                          margin: 0 auto; 
+                          padding: 40px 20px; 
+                          line-height: 1.6;
+                          color: #111;
+                        }
+                        .preview-header { 
+                          border-bottom: 1px solid #eee; 
+                          padding-bottom: 20px; 
+                          margin-bottom: 40px; 
+                        }
+                        .preview-label {
+                          background: #e7f5ff;
+                          color: #1971c2;
+                          padding: 4px 10px;
+                          border-radius: 4px;
+                          font-size: 12px;
+                          font-weight: 600;
+                          text-transform: uppercase;
+                          letter-spacing: 0.05em;
+                          margin-bottom: 12px;
+                          display: inline-block;
+                        }
+                        .preview-content img { max-width: 100%; height: auto; border-radius: 8px; }
+                      </style>
+                    </head>
+                    <body>
+                      <div class="preview-content">
+                        ${html}
+                      </div>
+                    </body>
+                  </html>
+                `], { type: 'text/html' })
+                const url = URL.createObjectURL(blob)
+                window.open(url, '_blank')
+              }}
 
               // package calls this on mount to load existing content
               onLoad={async (pageId) => {
