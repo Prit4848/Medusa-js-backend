@@ -19,6 +19,7 @@ import { EditorProvider, useEditor } from "./context/EditorContext";
 import LeftToolbarButtonSet from "./components/LeftToolbarButtonSet";
 import Header from "./components/Header";
 import TemplatePicker from "./components/TemplatePicker";
+import FrontendPage from "../components/FrontendPage";
 
 function EditorApp() {
   const {
@@ -34,7 +35,20 @@ function EditorApp() {
     fullscreen,
     spotlightMode,
     distractionFree,
+    view, setView,
+    pageTitle,
   } = useEditor();
+
+  if (view === 'site') {
+    return (
+      <FrontendPage 
+        title={pageTitle}
+        html={serialize(blocks)}
+        json={blocks}
+        onBackToEditor={() => setView('editor')}
+      />
+    );
+  }
 
   return (
     <>

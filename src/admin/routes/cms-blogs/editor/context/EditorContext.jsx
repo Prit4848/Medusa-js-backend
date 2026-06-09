@@ -23,6 +23,7 @@ export function EditorProvider({ children, blogId, initialData, onSave }) {
   const [spotlightMode, setSpotlightMode] = useState(false);
   const [distractionFree, setDistractionFree] = useState(false);
   const [topToolbar, setTopToolbar] = useState(false);
+  const [view, setView] = useState('editor');
 
   const historyRef = useRef({ past: [], future: [] });
   const blocksRef = useRef([]);
@@ -117,23 +118,11 @@ export function EditorProvider({ children, blogId, initialData, onSave }) {
     setBlocks(result);
     setTemplatePickerOpen(false);
   }
-function onViewSite() {
-  const html = serialize(blocks)
-  const blob = new Blob([`
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <title>${pageTitle}</title>
-        <style>
-          body { font-family: sans-serif; max-width: 800px; margin: 40px auto; padding: 0 20px; }
-        </style>
-      </head>
-      <body>${html}</body>
-    </html>
-  `], { type: 'text/html' })
-  
-  window.open(URL.createObjectURL(blob), '_blank')
-}
+
+  function onViewSite() {
+    setView('site');
+  }
+
   const value = {
     blocks, setBlocks,
     output,
@@ -150,9 +139,10 @@ function onViewSite() {
     spotlightMode, setSpotlightMode,
     distractionFree, setDistractionFree,
     topToolbar, setTopToolbar,
+    view, setView,
     historyRef, blocksRef,
     blockTemplates,
-    onViewSite: onViewSite,       // not needed in Medusa context
+    onViewSite: onViewSite,
     handleSave,
     handleClear,
     handleUndo,

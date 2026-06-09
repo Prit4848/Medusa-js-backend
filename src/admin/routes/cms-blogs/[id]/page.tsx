@@ -14,6 +14,7 @@ import { XMark } from "@medusajs/icons"
 import { BlockEditor } from "gutenberg-block-kit/editor"
 // import "gutenberg-block-kit/styles" // Removed global import
 import gutenbergStyles from "gutenberg-block-kit/styles?inline"
+import FrontendPage from "../components/FrontendPage"
 
 // Fix for broken library icon paths (library bug uses /src/images/...)
 import blockIcon from "../editor/images/block.png"
@@ -79,13 +80,15 @@ const scopeCSS = (css: string, selector: string) => {
 }
 
 export default function CmsBlogFormPage() {
+  const [view, setView] = useState<"editor" | "site">("editor")
+
   useEffect(() => {
     const styleId = "gutenberg-styles-injection"
     if (!document.getElementById(styleId)) {
       const style = document.createElement("style")
       style.id = styleId
       // Scope the global gutenbergStyles to only apply inside our wrapper
-      style.innerHTML = scopeCSS(gutenbergStyles, ".gutenberg-editor-wrapper")
+      style.innerHTML = scopeCSS(gutenbergStyles, ".builder-wrapper")
       document.head.appendChild(style)
     }
     return () => {
@@ -105,6 +108,7 @@ export default function CmsBlogFormPage() {
     content_html: "",
     content_json: null as any,
     published_at: null as string | null,
+    updated_at: null as string | null,
   })
 
   const [saving, setSaving] = useState(false)
@@ -122,6 +126,7 @@ export default function CmsBlogFormPage() {
             content_html: data.blog.content_html || "",
             content_json: data.blog.content_json || null,
             published_at: data.blog.published_at || null,
+            updated_at:   data.blog.updated_at   || null,
           })
         })
     }
@@ -165,7 +170,11 @@ export default function CmsBlogFormPage() {
         if (isNew && saved.blog?.id) {
           navigate(`/cms-blogs/${saved.blog.id}`, { replace: true })
         } else if (saved.blog?.slug) {
-          setForm(prev => ({ ...prev, slug: saved.blog.slug }))
+          setForm(prev => ({ 
+            ...prev, 
+            slug: saved.blog.slug,
+            updated_at: saved.blog.updated_at 
+          }))
         }
         // Removed: navigate(`/cms-blogs`) - we want to stay on the page in a builder
       } else {
@@ -178,6 +187,18 @@ export default function CmsBlogFormPage() {
     } finally {
       setSaving(false)
     }
+  }
+
+  if (view === "site") {
+    return (
+      <FrontendPage 
+        title={form.title}
+        html={form.content_html}
+        json={form.content_json}
+        updatedAt={form.updated_at || undefined}
+        onBackToEditor={() => setView("editor")}
+      />
+    )
   }
 
   return (
@@ -199,7 +220,7 @@ export default function CmsBlogFormPage() {
       <div className="flex flex-col gap-4">
         {/* CONTENT — replaced with gutenberg-block-kit */}
         <div>
-          <div className="border-t gutenberg-editor-wrapper" style={{ minHeight: "calc(100vh - 150px)" }}>
+          <div className="border-t builder-wrapper" style={{ minHeight: "calc(100vh - 150px)" }}>
             <BlockEditor
               initialPageId={id}
               initialTitle={form.title}
@@ -232,59 +253,11 @@ export default function CmsBlogFormPage() {
               onSave={handleEditorSave}
 
               onViewSite={() => {
-                const html = form.content_html
-                if (!html) {
+                if (!form.content_html) {
                   alert("Please save your changes first to generate a preview.")
                   return
                 }
-
-                const blob = new Blob([`
-                  <!DOCTYPE html>
-                  <html>
-                    <head>
-                      <title>${form.title || "Blog Preview"}</title>
-                      <style>
-                        /* Package Styles */
-                        ${gutenbergStyles}
-                        
-                        /* Preview Layout Styles */
-                        body { 
-                          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
-                          max-width: 1200px; 
-                          margin: 0 auto; 
-                          padding: 40px 20px; 
-                          line-height: 1.6;
-                          color: #111;
-                        }
-                        .preview-header { 
-                          border-bottom: 1px solid #eee; 
-                          padding-bottom: 20px; 
-                          margin-bottom: 40px; 
-                        }
-                        .preview-label {
-                          background: #e7f5ff;
-                          color: #1971c2;
-                          padding: 4px 10px;
-                          border-radius: 4px;
-                          font-size: 12px;
-                          font-weight: 600;
-                          text-transform: uppercase;
-                          letter-spacing: 0.05em;
-                          margin-bottom: 12px;
-                          display: inline-block;
-                        }
-                        .preview-content img { max-width: 100%; height: auto; border-radius: 8px; }
-                      </style>
-                    </head>
-                    <body>
-                      <div class="preview-content">
-                        ${html}
-                      </div>
-                    </body>
-                  </html>
-                `], { type: 'text/html' })
-                const url = URL.createObjectURL(blob)
-                window.open(url, '_blank')
+                setView("site")
               }}
 
               // package calls this on mount to load existing content
