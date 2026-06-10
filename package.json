@@ -15,7 +15,6 @@
   "scripts": {
     "build": "medusa build",
     "seed": "medusa exec ./src/scripts/seed.ts",
-    "prebuild": "npx medusa db:generate && npx medusa db:migrate",
     "prestart": "npm run build",
     "start": "cd .medusa/server && medusa start",
     "dev": "medusa develop",
