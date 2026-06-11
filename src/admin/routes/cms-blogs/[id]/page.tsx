@@ -6,6 +6,8 @@ import {
   Heading,
   Input,
   Label,
+  Toaster,
+  toast,
 } from "@medusajs/ui"
 import { XMark } from "@medusajs/icons"
 
@@ -167,6 +169,7 @@ export default function CmsBlogFormPage() {
       const saved = await res.json()
 
       if (res.ok) {
+        toast.success("Block saved successfully")
         if (isNew && saved.blog?.id) {
           navigate(`/cms-blogs/${saved.blog.id}`, { replace: true })
         } else if (saved.blog?.slug) {
@@ -179,11 +182,11 @@ export default function CmsBlogFormPage() {
         // Removed: navigate(`/cms-blogs`) - we want to stay on the page in a builder
       } else {
         console.error("Save failed:", saved)
-        alert(`Failed to save (Error ${res.status}). Please check if you are still logged in.`)
+        toast.error(`Failed to save (Error ${res.status}). Please check if you are still logged in.`)
       }
     } catch (err) {
       console.error(err)
-      alert("Failed to save. Network error or session expired.")
+      toast.error("Failed to save. Network error or session expired.")
     } finally {
       setSaving(false)
     }
@@ -203,6 +206,7 @@ export default function CmsBlogFormPage() {
 
   return (
     <Container className="p-0 max-w-none">
+      <Toaster />
       <style>{ICON_STYLES}</style>
       <div className="flex items-center justify-between px-8 py-6  border-b ">
         <Heading level="h1">{isNew ? "New Page" : "Edit Page"}</Heading>
@@ -254,7 +258,7 @@ export default function CmsBlogFormPage() {
 
               onViewSite={() => {
                 if (!form.content_html) {
-                  alert("Please save your changes first to generate a preview.")
+                  toast.warning("Please save your changes first to generate a preview.")
                   return
                 }
                 setView("site")
