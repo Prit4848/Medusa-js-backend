@@ -55,6 +55,29 @@ const ICON_STYLES = `
     margin: 0 -24px;
     z-index: 100;
   }
+  
+  /* List View Visibility and Color Fixes */
+  .block-editor-list-view-leaf .block-editor-list-view-block-contents,
+  .block-editor-list-view-leaf .block-editor-list-view-block-contents * {
+    color: #000 !important;
+  }
+  
+  .editor-list-view, .block-editor-list-view-tree {
+    background: #fff !important;
+    z-index: 10;
+  }
+  
+  /* Ensure list view is visible on hover in distraction-free mode */
+  .is-distraction-free .editor-list-view {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+  }
+  
+  .is-distraction-free:hover .editor-list-view {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+  }
 `
 
 // Helper to scope CSS strings to a selector

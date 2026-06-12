@@ -1671,6 +1671,13 @@ span.myapp-underline {
   position: absolute;
   left: 0px;
   padding: 4px;
+  background: #fff;
+  z-index: 10;
+  color: #000;
+}
+
+.builder-wrapper .editor-list-view * {
+  color: #000 !important;
 }
 
 .list-view-active .editor-canvas {
