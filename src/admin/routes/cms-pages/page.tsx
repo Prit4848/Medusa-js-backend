@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import { defineRouteConfig } from "@medusajs/admin-sdk"
 import { DocumentText } from "@medusajs/icons"
-import { Button, Table, Badge, Container, Heading } from "@medusajs/ui"
+import { Button, Table, Badge, Container, Heading, usePrompt } from "@medusajs/ui"
 import { useNavigate } from "react-router-dom"
 
 export const config = defineRouteConfig({
@@ -13,6 +13,7 @@ export default function CmsPagesListPage() {
   const [pages, setPages] = useState([])
   const [loading, setLoading] = useState(true)
   const navigate = useNavigate()
+  const prompt = usePrompt()
 
   useEffect(() => {
     fetch("/admin/cms/pages", {
@@ -26,7 +27,16 @@ export default function CmsPagesListPage() {
   }, [])
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Delete this page?")) return
+    const interactive = await prompt({
+      title: "Delete Page",
+      description: "Are you sure you want to delete this page? This action cannot be undone.",
+      variant: "danger",
+    })
+
+    if (!interactive) {
+      return
+    }
+
     await fetch(`/admin/cms/pages/${id}`, {
       method: "DELETE",
       credentials: "include",

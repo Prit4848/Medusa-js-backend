@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import { defineRouteConfig } from "@medusajs/admin-sdk"
 import { PencilSquare } from "@medusajs/icons"
-import { Button, Table, Badge, Container, Heading } from "@medusajs/ui"
+import { Button, Table, Badge, Container, Heading, usePrompt } from "@medusajs/ui"
 import { useNavigate } from "react-router-dom"
 
 export const config = defineRouteConfig({
@@ -13,6 +13,7 @@ export default function CmsBlogsListPage() {
   const [blogs, setBlogs] = useState([])
   const [loading, setLoading] = useState(true)
   const navigate = useNavigate()
+  const prompt = usePrompt()
 
   useEffect(() => {
     fetch("/admin/cms/blogs", { credentials: "include" })
@@ -24,7 +25,16 @@ export default function CmsBlogsListPage() {
   }, [])
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Delete this?")) return
+    const interactive = await prompt({
+      title: "Delete Block",
+      description: "Are you sure you want to delete this block? This action cannot be undone.",
+      variant: "danger",
+    })
+
+    if (!interactive) {
+      return
+    }
+
     await fetch(`/admin/cms/blogs/${id}`, {
       method: "DELETE",
       credentials: "include",
