@@ -23,22 +23,61 @@ import blockIcon from "../editor/images/block.png"
 import blockHoverIcon from "../editor/images/block-hover.png"
 
 const ICON_STYLES = `
-  .builder-wrapper .dashicons, .gutenberg-editor-wrapper .dashicons { 
+  .builder-wrapper .dashicons, 
+  .gutenberg-editor-wrapper .dashicons, 
+  .components-modal .dashicons, 
+  .rbb-media-modal .dashicons { 
     background-image: url(${blockIcon}) !important; 
   }
-  .components-popover__fallback-container .components-button.block-editor-block-types-list__item:not(:disabled):hover .dashicons {
+  .components-popover__fallback-container .components-button.block-editor-block-types-list__item:not(:disabled):hover .dashicons,
+  .rbb-media-modal .components-button:hover .dashicons {
     background-image: url(${blockHoverIcon}) !important;
   }
   .builder-wrapper .editor-header {
     background: #fff !important;
+  }
+  /* Fix for media modal footer visibility */
+  .rbb-media-modal .components-modal__content {
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 0 !important;
+  }
+  .rbb-media-modal__grid-wrap {
+    flex: 1;
+    overflow-y: auto;
+  }
+  .rbb-media-modal__footer {
+    position: sticky;
+    bottom: 0;
+    background: #fff;
+    padding: 16px 24px;
+    border-top: 1px solid #e0e0e0;
+    margin: 0 -24px;
+    z-index: 100;
   }
 `
 
 // Helper to scope CSS strings to a selector
 const scopeCSS = (css: string, selector: string) => {
   return css.replace(/([^}{]+)(?=\{)/g, (match) => {
-    return match
-      .split(",")
+    // Split by comma but respect parentheses (e.g. :is(.a, .b))
+    const parts: string[] = []
+    let current = ""
+    let depth = 0
+    for (let i = 0; i < match.length; i++) {
+      const char = match[i]
+      if (char === "(") depth++
+      if (char === ")") depth--
+      if (char === "," && depth === 0) {
+        parts.push(current)
+        current = ""
+      } else {
+        current += char
+      }
+    }
+    parts.push(current)
+
+    return parts
       .map((s) => {
         const trimmed = s.trim()
         if (
@@ -64,10 +103,20 @@ const scopeCSS = (css: string, selector: string) => {
           ".components-notice",
           ".components-snackbar",
           ".rbb-media-modal",
-          ".components-drop-zone"
+          ".components-drop-zone",
+          ".block-editor-media-placeholder",
+          ".block-editor-media-replace-flow",
+          ".components-form-token-field__suggestions-list"
         ]
 
         if (globalClasses.some(cls => trimmed.includes(cls))) {
+          return s
+        }
+
+        // If it looks like a generic Gutenberg component, it might be used in a portal
+        // so we don't scope it if it's already generic enough.
+        // However, to be safe, we only do this for known portal-heavy prefixes.
+        if (trimmed.includes(".components-") || trimmed.includes(".block-editor-")) {
           return s
         }
 
@@ -238,7 +287,12 @@ export default function CmsBlogFormPage() {
                     `/admin/cms/media?page=${page}&perPage=${perPage}&q=${encodeURIComponent(search || "")}`,
                     { credentials: "include" }
                   );
-                  return res.json();
+                  const data = await res.json();
+                  return {
+                    ...data,
+                    images: data.items, // Ensure compatibility
+                    count: data.total,  // Ensure compatibility
+                  };
                 },
                 uploadImage: async (file) => {
                   const body = new FormData();

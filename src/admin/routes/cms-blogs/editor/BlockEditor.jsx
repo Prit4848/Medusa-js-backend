@@ -13,8 +13,24 @@ let blocksReady = false;
 // Helper to scope CSS strings to a selector
 const scopeCSS = (css, selector) => {
   return css.replace(/([^}{]+)(?=\{)/g, (match) => {
-    return match
-      .split(",")
+    // Split by comma but respect parentheses (e.g. :is(.a, .b))
+    const parts = []
+    let current = ""
+    let depth = 0
+    for (let i = 0; i < match.length; i++) {
+      const char = match[i]
+      if (char === "(") depth++
+      if (char === ")") depth--
+      if (char === "," && depth === 0) {
+        parts.push(current)
+        current = ""
+      } else {
+        current += char
+      }
+    }
+    parts.push(current)
+
+    return parts
       .map((s) => {
         const trimmed = s.trim()
         if (
@@ -40,10 +56,18 @@ const scopeCSS = (css, selector) => {
           ".components-notice",
           ".components-snackbar",
           ".rbb-media-modal",
-          ".components-drop-zone"
+          ".components-drop-zone",
+          ".block-editor-media-placeholder",
+          ".block-editor-media-replace-flow",
+          ".components-form-token-field__suggestions-list"
         ]
 
         if (globalClasses.some(cls => trimmed.includes(cls))) {
+          return s
+        }
+
+        // If it looks like a generic Gutenberg component, it might be used in a portal
+        if (trimmed.includes(".components-") || trimmed.includes(".block-editor-")) {
           return s
         }
 
