@@ -12,5 +12,10 @@ export default defineMiddlewares({
         upload.array("files"),
       ],
     },
+    {
+      matcher: "/store/feedback",  
+      method: "POST",
+      middlewares: [upload.array("files")],
+    },
   ],
 })

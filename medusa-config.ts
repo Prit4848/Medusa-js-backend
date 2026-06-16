@@ -23,7 +23,7 @@ module.exports = defineConfig({
         resolve: {
           dedupe: ["react", "react-dom", "@wordpress/element"],
           alias: {
-            "gutenberg-block-kit/editor": 
+            "gutenberg-block-kit/editor":
               path.resolve(__dirname, "node_modules/gutenberg-block-kit/dist/editor.cjs"),
           },
         },
@@ -44,6 +44,9 @@ module.exports = defineConfig({
     {
       resolve: "@medusajs/medusa/payment",
       options: { providers: [] },
+    },
+    {
+      resolve: "./src/modules/feedback",
     },
     {
       resolve: "./src/modules/cms",
