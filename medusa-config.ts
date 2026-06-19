@@ -55,6 +55,9 @@ module.exports = defineConfig({
       resolve: "./src/modules/contact",
     },
     {
+      resolve: "./src/modules/wishlist",
+    },
+    {
       resolve: "@medusajs/medusa/file",
       options: {
         providers: [
