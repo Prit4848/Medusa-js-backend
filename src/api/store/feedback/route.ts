@@ -42,13 +42,13 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
   }
 
   const feedback = await feedbackService.createFeedbacks({
-    product_id,
-    first_name,
-    last_name,
-    rating: Number(rating),
-    comment: comment || null,
-    image_urls,
-  })
+  product_id,
+  first_name,
+  last_name,
+  rating: Number(rating),
+  comment: comment || null,
+  image_urls: image_urls as unknown as Record<string, unknown> | null,
+})
 
   // ← Recalculate and cache stats after every new submission
   await feedbackService.recalculateProductStats(product_id)
